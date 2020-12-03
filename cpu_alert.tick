@@ -11,6 +11,5 @@ stream
 		.message('{{index .Tags "host"}} {{.Level}} cpu-idle: {{index .Fields "usage_idle"}}')
 		.warn(lambda: int("usage_idle") < 80)
 		.flapping(0.25, 0.5)
-		.log('C:/Users/Edward/Desktop/Monitoring/Kapacitor/Logs/alerts.log')
 		.email()
 		.stateChangesOnly()
