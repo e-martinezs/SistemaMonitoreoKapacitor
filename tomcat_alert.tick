@@ -1,0 +1,10 @@
+dbrp "influx"."autogen"
+
+stream
+	|from()
+		.measurement('tomcat_jvm_memory')
+		.groupBy('host')
+	|deadman(1.0, 10s)
+		.message('{{index .Tags "host"}} {{.Level}} Tomcat process is down')
+		.email()
+		.stateChangesOnly()
