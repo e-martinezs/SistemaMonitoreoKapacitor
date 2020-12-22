@@ -1,0 +1,31 @@
+dbrp "influx"."autogen"
+
+stream
+	|from()
+		.measurement('cpu')
+		.groupBy('host')
+	|window()
+		.period(1m)
+		.every(1m)
+	|mean("usage_idle")
+	|alert()
+		.message('{{index .Tags "host"}} {{.Level}} cpu-idle: {{index .Fields "usage_idle"}}')
+		.warn(lambda: int("usage_idle") < 80)
+		.flapping(0.25, 0.5)
+		.email()
+		.stateChangesOnly()
+	
+stream
+	|from()
+		.measurement('mem')
+		.groupBy('host')
+	|window()
+		.period(1m)
+		.every(1m)
+	|mean("used_percent")
+	|alert()
+		.message('{{.Level}} {{index .Tags "host"}} Uso de RAM: {{index .Fields "used_percent"}} ')
+		.warn(lambda: int("used_percent") > 90)
+		.flapping(0.25, 0.5)
+		.email()
+		.stateChangesOnly()
