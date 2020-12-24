@@ -2,6 +2,9 @@ dbrp "influx"."autogen"
 
 var measurement string
 var serviceName string
+var serviceDashboardUID string
+var hostDashboardUID = 'I2m6yUpMz'
+var grafanaUrl = 'http://localhost:3000/'
 
 stream
 	|from()
@@ -23,6 +26,9 @@ stream
 			<p>El proceso de '''+serviceName+''' dejo de enviar datos</p>
 			<p>Revisar en el servidor si murio el proceso de '''+serviceName+''', o si murio el proceso de Telegraf</p>
 			{{end}}
+			
+			<p>Host Dashboard: </p><a>'''+grafanaUrl+'''/d/'''+hostDashboardUID+'''?var-Host={{index .Tags "host"}}</a>
+			<p>'''+serviceName+''' Dashboard</p><a>'''+grafanaUrl+'''/d/'''+serviceDashboardUID+'''?var-Host={{index .Tags "host"}}</a>
 		''')
 		.email()
 		.stateChangesOnly()
