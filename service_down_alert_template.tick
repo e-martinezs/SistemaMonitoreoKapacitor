@@ -1,0 +1,29 @@
+dbrp "influx"."autogen"
+
+var measurement string
+var serviceName string
+
+stream
+	|from()
+		.measurement(measurement)
+		.groupBy('host')
+	|deadman(1.0, 10s)
+		.id(serviceName+' Down Alert')
+		.message('{{.Level}} {{index .Tags "host"}} El proceso de '+serviceName+' dejo de enviar datos')
+		.details('''
+			<h3>{{.ID}}</h3>
+			<b>Nivel: {{.Level}}</b>
+			<b>Host: {{index .Tags "host"}}</b>
+			<b>Tiempo: {{.Time}}</b>
+			<b>Duración: {{.Duration}}</b>
+			
+			{{if eq .Level "OK"}}
+			<p>El proceso de '''+serviceName+''' esta bien</p>
+			{{else}}
+			<p>El proceso de '''+serviceName+''' dejo de enviar datos</p>
+			<p>Revisar en el servidor si murio el proceso de '''+serviceName+''', o si murio el proceso de Telegraf</p>
+			{{end}}
+		''')
+		.email()
+		.stateChangesOnly()
+		
