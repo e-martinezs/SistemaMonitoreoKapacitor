@@ -4,32 +4,34 @@ var measurement string
 var serviceName string
 var serviceDashboardUID string
 var hostDashboardUID = 'I2m6yUpMz'
-var grafanaUrl = 'http://localhost:3000/'
+var grafanaUrl = 'http://localhost:3000'
 
 stream
 	|from()
 		.measurement(measurement)
 		.groupBy('host')
 	|deadman(1.0, 10s)
-		.id(serviceName+' Down Alert')
-		.message('{{.Level}} {{index .Tags "host"}} El proceso de '+serviceName+' dejo de enviar datos')
-		.details('''
-			<h3>{{.ID}}</h3>
-			<b>Nivel: {{.Level}}</b>
-			<b>Host: {{index .Tags "host"}}</b>
-			<b>Tiempo: {{.Time}}</b>
-			<b>Duración: {{.Duration}}</b>
+		.id('{{.TaskName}}')
+		.message('{{.Level}} [{{index .Tags "host"}}] El proceso de '+serviceName+' dejo de enviar datos.')
+		.details('
+			<p><b>Alerta: {{.ID}}</b></p>
+			<p><b>Nivel: {{.Level}}</b></p>
+			<p><b>Host: {{index .Tags "host"}}</b></p>
+			<p><b>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</b></p>
+			<p><b>Duración: {{.Duration}}</b></p>
 			
 			{{if eq .Level "OK"}}
-			<p>El proceso de '''+serviceName+''' esta bien</p>
+			<p>El proceso de '+serviceName+' esta enviando datos.</p>
 			{{else}}
-			<p>El proceso de '''+serviceName+''' dejo de enviar datos</p>
-			<p>Revisar en el servidor si murio el proceso de '''+serviceName+''', o si murio el proceso de Telegraf</p>
+			<p>El proceso de '+serviceName+' dejo de enviar datos.</p>
+			<p>Revisar en si dejo de funcionar el proceso de '+serviceName+' o el proceso de Telegraf.</p>
 			{{end}}
 			
-			<p>Host Dashboard: </p><a>'''+grafanaUrl+'''/d/'''+hostDashboardUID+'''?var-Host={{index .Tags "host"}}</a>
-			<p>'''+serviceName+''' Dashboard</p><a>'''+grafanaUrl+'''/d/'''+serviceDashboardUID+'''?var-Host={{index .Tags "host"}}</a>
-		''')
+			<ul>
+			<li>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}</a></li>
+			<li>'+serviceName+' Dashboard: <a>'+grafanaUrl+'/d/'+serviceDashboardUID+'?var-Host={{index .Tags "host"}}</a></li>
+			</ul>'
+		)
 		.email()
 		.stateChangesOnly()
 		
