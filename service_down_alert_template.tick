@@ -11,8 +11,8 @@ stream
 		.measurement(measurement)
 		.groupBy('host')
 	|deadman(1.0, 10s)
-		.id('{{.TaskName}}')
-		.message('{{.Level}} [{{index .Tags "host"}}] El proceso de '+serviceName+' dejo de enviar datos.')
+		.id('{{.TaskName}} {{index .Tags "host"}}')
+		.message('{{.Level}} [{{index .Tags "host"}}] El proceso de '+serviceName+' dejó de enviar datos.')
 		.details('
 			<p><b>Alerta: {{.ID}}</b></p>
 			<p><b>Nivel: {{.Level}}</b></p>
@@ -21,10 +21,10 @@ stream
 			<p><b>Duración: {{.Duration}}</b></p>
 			
 			{{if eq .Level "OK"}}
-			<p>El proceso de '+serviceName+' esta enviando datos.</p>
+			<p>El proceso de '+serviceName+' está enviando datos.</p>
 			{{else}}
-			<p>El proceso de '+serviceName+' dejo de enviar datos.</p>
-			<p>Revisar en si dejo de funcionar el proceso de '+serviceName+' o el proceso de Telegraf.</p>
+			<p>El proceso de '+serviceName+' dejó de enviar datos.</p>
+			<p>Revisar en si dejó de funcionar el proceso de '+serviceName+' o el proceso de Telegraf.</p>
 			{{end}}
 			
 			<ul>

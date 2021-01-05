@@ -7,27 +7,22 @@ stream
 	|from()
 		.measurement('cpu')
 		.groupBy('host')
-	|window()
-		.period(1m)
-		.every(1m)
-	|mean('usage_idle')
-		.as('mean_usage_idle')
-	|eval(lambda: 100.0-"mean_usage_idle")
-		.as('cpu_usage')
-		.keep()
-	|eval(lambda: int(unixNano("time")/1000000))
+	|stats(10s)
+		.align()
+	|derivative('emitted')
+		.unit(10s)
+		.nonNegative()
+	|eval(lambda: int(unixNano(now())/1000000))
 		.as('timestamp')
 		.keep()
 	|eval(lambda: "timestamp"-3600000)
 		.as('timestamp_1hour_before')
 		.keep()
 	|alert()
-		.info(lambda: int("cpu_usage") >= 20)
-		.warn(lambda: int("cpu_usage") >= 30)
-		.crit(lambda: int("cpu_usage") >= 50)
+		.crit(lambda: "emitted" < 1.0)
 		.flapping(0.25, 0.5)
 		.id('{{.TaskName}} {{index .Tags "host"}}')
-		.message('{{.Level}} [{{index .Tags "host"}}] El uso de CPU es muy alto.')
+		.message('{{.Level}} [{{index .Tags "host"}}] El servidor dejó de enviar datos.')
 		.details('
 			<ul>
 			<li>Alerta: {{.ID}}</li>
@@ -38,13 +33,12 @@ stream
 			</ul>
 			<br>	
 			{{if eq .Level "OK"}}
-			<p><b>El uso de CPU regresó a un nivel normal.</b></p>
+			<p><b>El servidor volvió a enviar datos.</b></p>
 			{{else}}
-			<p><b>El uso de CPU es muy alto.</b></p>
+			<p><b>El servidor dejó de enviar datos.</b></p>
+			<p><b>Revisar si murió el servidor o el proceso de Telegraf</b><p>
 			{{end}}
-			<p><b>Uso de CPU: {{index .Fields "cpu_usage" | printf "%0.2f"}} %</b></p>
 			<p>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></p>'
 		)
 		.email()
 		.stateChangesOnly()
-		
