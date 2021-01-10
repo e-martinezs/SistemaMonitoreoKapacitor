@@ -1,19 +1,22 @@
 dbrp "influx"."autogen"
 
+var measurement string
+var field string
+var metricName string
 var hostDashboardUID = 'I2m6yUpMz'
 var grafanaUrl = 'http://localhost:3000'
 
 stream
 	|from()
-		.measurement('cpu')
+		.measurement(measurement)
 		.groupBy('host')
 	|window()
 		.period(1m)
 		.every(1m)
-	|mean('usage_idle')
-		.as('mean_usage_idle')
-	|eval(lambda: 100.0-"mean_usage_idle")
-		.as('cpu_usage')
+	|mean(field)
+		.as('mean_usage')
+	|eval(lambda: 100.0-"mean_usage")
+		.as('usage')
 		.keep()
 	|eval(lambda: int(unixNano("time")/1000000))
 		.as('timestamp')
@@ -22,12 +25,12 @@ stream
 		.as('timestamp_1hour_before')
 		.keep()
 	|alert()
-		.info(lambda: int("cpu_usage") >= 20)
-		.warn(lambda: int("cpu_usage") >= 30)
-		.crit(lambda: int("cpu_usage") >= 50)
+		.info(lambda: int("usage") >= 80)
+		.warn(lambda: int("usage") >= 90)
+		.crit(lambda: int("usage") >= 95)
 		.flapping(0.25, 0.5)
 		.id('{{.TaskName}} {{index .Tags "host"}}')
-		.message('{{.Level}} [{{index .Tags "host"}}] El uso de CPU es muy alto.')
+		.message('{{.Level}} [{{index .Tags "host"}}] El uso de '+metricName+' es muy alto.')
 		.details('
 			<ul>
 			<li>Alerta: {{.ID}}</li>
@@ -38,11 +41,11 @@ stream
 			</ul>
 			<br>	
 			{{if eq .Level "OK"}}
-			<p><b>El uso de CPU regresó a un nivel normal.</b></p>
+			<p><b>El uso de '+metricName+' regresó a un nivel normal.</b></p>
 			{{else}}
-			<p><b>El uso de CPU es muy alto.</b></p>
+			<p><b>El uso de '+metricName+' es muy alto.</b></p>
 			{{end}}
-			<p><b>Uso de CPU: {{index .Fields "cpu_usage" | printf "%0.2f"}} %</b></p>
+			<p><b>Uso de '+metricName+': {{index .Fields "usage" | printf "%0.2f"}} %</b></p>
 			<p>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></p>'
 		)
 		.email()

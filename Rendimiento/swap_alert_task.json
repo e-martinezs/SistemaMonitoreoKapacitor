@@ -1,0 +1,8 @@
+{
+	"template-id":"metric_alert",
+	"vars": {
+		"measurement": {"type":"string", "value":"swap"},
+		"field": {"type":"string", "value":"used_percent"},
+		"metricName": {"type":"string", "value":"swap"}
+	}
+}
