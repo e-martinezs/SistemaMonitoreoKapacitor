@@ -40,5 +40,6 @@ stream
 			{{end}}
 			<p>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></p>'
 		)
+		.inhibit('service_down_alert', 'host')
 		.email()
 		.stateChangesOnly()

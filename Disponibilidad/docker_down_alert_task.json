@@ -1,0 +1,8 @@
+{
+	"template-id":"service_down_alert",
+	"vars": {
+		"measurement": {"type":"string", "value":"docker"},
+		"serviceName": {"type":"string", "value":"Docker"},
+		"serviceDashboardUID": {"type":"string", "value":"uamKR_0Mz"}
+	}
+}

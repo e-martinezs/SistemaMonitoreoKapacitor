@@ -1,0 +1,50 @@
+dbrp "influx"."autogen"
+
+var hostDashboardUID = 'I2m6yUpMz'
+var grafanaUrl = 'http://localhost:3000'
+
+stream
+	|from()
+		.measurement('cpu')
+		.groupBy('host')
+	|window()
+		.period(1m)
+		.every(1m)
+	|mean('usage_idle')
+		.as('mean_usage_idle')
+	|eval(lambda: 100.0-"mean_usage_idle")
+		.as('cpu_usage')
+		.keep()
+	|eval(lambda: int(unixNano("time")/1000000))
+		.as('timestamp')
+		.keep()
+	|eval(lambda: "timestamp"-3600000)
+		.as('timestamp_1hour_before')
+		.keep()
+	|alert()
+		.info(lambda: int("cpu_usage") >= 20)
+		.warn(lambda: int("cpu_usage") >= 30)
+		.crit(lambda: int("cpu_usage") >= 50)
+		.flapping(0.25, 0.5)
+		.id('{{.TaskName}} {{index .Tags "host"}}')
+		.message('{{.Level}} [{{index .Tags "host"}}] El uso de CPU es muy alto.')
+		.details('
+			<ul>
+			<li>Alerta: {{.ID}}</li>
+			<li>Nivel: {{.Level}}</li>
+			<li>Host: {{index .Tags "host"}}</li>
+			<li>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</li>
+			<li>Duración: {{.Duration}}</li>
+			</ul>
+			<br>	
+			{{if eq .Level "OK"}}
+			<p><b>El uso de CPU regresó a un nivel normal.</b></p>
+			{{else}}
+			<p><b>El uso de CPU es muy alto.</b></p>
+			{{end}}
+			<p><b>Uso de CPU: {{index .Fields "cpu_usage" | printf "%0.2f"}} %</b></p>
+			<p>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></p>'
+		)
+		.email()
+		.stateChangesOnly()
+		

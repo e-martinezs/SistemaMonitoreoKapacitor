@@ -1,7 +1,7 @@
 {
 	"template-id":"service_down_alert",
 	"vars": {
-		"measurement": {"type":"string", "value":"tomcat_jvm_memory"},
+		"measurement": {"type":"string", "value":"tomcat.jvm_memory"},
 		"serviceName": {"type":"string", "value":"Tomcat"},
 		"serviceDashboardUID": {"type":"string", "value":"s-GHR3tGk"}
 	}

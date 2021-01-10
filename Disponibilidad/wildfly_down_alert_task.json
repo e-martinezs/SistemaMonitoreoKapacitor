@@ -1,0 +1,8 @@
+{
+	"template-id":"service_down_alert",
+	"vars": {
+		"measurement": {"type":"string", "value":"jboss.jvm_memory"},
+		"serviceName": {"type":"string", "value":"WildFly"},
+		"serviceDashboardUID": {"type":"string", "value":"3H74g_0Mz"}
+	}
+}

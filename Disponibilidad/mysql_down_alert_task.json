@@ -1,0 +1,8 @@
+{
+	"template-id":"service_down_alert",
+	"vars": {
+		"measurement": {"type":"string", "value":"mysql"},
+		"serviceName": {"type":"string", "value":"MySQL"},
+		"serviceDashboardUID": {"type":"string", "value":"jckIg_0Mz"}
+	}
+}

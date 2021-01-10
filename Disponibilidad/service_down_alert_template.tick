@@ -10,8 +10,22 @@ stream
 	|from()
 		.measurement(measurement)
 		.groupBy('host')
-	|deadman(1.0, 10s)
+	|stats(10s)
+		.align()
+	|derivative('emitted')
+		.unit(10s)
+		.nonNegative()
+	|eval(lambda: int(unixNano(now())/1000000))
+		.as('timestamp')
+		.keep()
+	|eval(lambda: "timestamp"-3600000)
+		.as('timestamp_1hour_before')
+		.keep()
+	|alert()
+		.crit(lambda: "emitted" < 1.0)
+		.flapping(0.25, 0.5)
 		.id('{{.TaskName}} {{index .Tags "host"}}')
+		.category('service_down_alert')
 		.message('{{.Level}} [{{index .Tags "host"}}] El proceso de '+serviceName+' dejó de enviar datos.')
 		.details('
 			<p><b>Alerta: {{.ID}}</b></p>
@@ -19,17 +33,15 @@ stream
 			<p><b>Host: {{index .Tags "host"}}</b></p>
 			<p><b>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</b></p>
 			<p><b>Duración: {{.Duration}}</b></p>
-			
 			{{if eq .Level "OK"}}
 			<p>El proceso de '+serviceName+' está enviando datos.</p>
 			{{else}}
 			<p>El proceso de '+serviceName+' dejó de enviar datos.</p>
 			<p>Revisar en si dejó de funcionar el proceso de '+serviceName+' o el proceso de Telegraf.</p>
 			{{end}}
-			
 			<ul>
-			<li>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}</a></li>
-			<li>'+serviceName+' Dashboard: <a>'+grafanaUrl+'/d/'+serviceDashboardUID+'?var-Host={{index .Tags "host"}}</a></li>
+			<li>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></li>
+			<li>'+serviceName+' Dashboard: <a>'+grafanaUrl+'/d/'+serviceDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></li>
 			</ul>'
 		)
 		.email()

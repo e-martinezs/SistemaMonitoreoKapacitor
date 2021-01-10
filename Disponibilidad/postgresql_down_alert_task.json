@@ -1,0 +1,8 @@
+{
+	"template-id":"service_down_alert",
+	"vars": {
+		"measurement": {"type":"string", "value":"postgresql"},
+		"serviceName": {"type":"string", "value":"PostgreSQL"},
+		"serviceDashboardUID": {"type":"string", "value":"p6RwUUtMk"}
+	}
+}

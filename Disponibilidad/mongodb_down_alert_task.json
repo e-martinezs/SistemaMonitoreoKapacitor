@@ -1,0 +1,8 @@
+{
+	"template-id":"service_down_alert",
+	"vars": {
+		"measurement": {"type":"string", "value":"mongodb"},
+		"serviceName": {"type":"string", "value":"MongoDB"},
+		"serviceDashboardUID": {"type":"string", "value":"hsyng_0Mk"}
+	}
+}
