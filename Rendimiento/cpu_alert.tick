@@ -1,7 +1,7 @@
 dbrp "influx"."autogen"
 
 var hostDashboardUID = 'I2m6yUpMz'
-var grafanaUrl = 'http://localhost:3000'
+var grafanaUrl = 'http://tesisgrafana.westus2.cloudapp.azure.com:3000'
 
 stream
 	|from()
