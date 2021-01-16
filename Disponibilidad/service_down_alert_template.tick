@@ -4,16 +4,16 @@ var measurement string
 var serviceName string
 var serviceDashboardUID string
 var hostDashboardUID = 'I2m6yUpMz'
-var grafanaUrl = 'http://localhost:3000'
+var grafanaUrl = 'http://tesisgrafana.westus2.cloudapp.azure.com:3000'
 
 stream
 	|from()
 		.measurement(measurement)
 		.groupBy('host')
-	|stats(10s)
+	|stats(1m)
 		.align()
 	|derivative('emitted')
-		.unit(10s)
+		.unit(1m)
 		.nonNegative()
 	|eval(lambda: int(unixNano(now())/1000000))
 		.as('timestamp')
