@@ -33,6 +33,7 @@ stream
 			<p>Host: {{index .Tags "host"}}</p>
 			<p>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</p>
 			<p>Duración: {{.Duration}}</p>
+			<br>
 			{{if eq .Level "OK"}}
 			<p><b>El proceso de '+serviceName+' está enviando datos.</b></p>
 			{{else}}

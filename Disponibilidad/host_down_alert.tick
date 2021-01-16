@@ -28,7 +28,8 @@ stream
 			<p>Nivel: {{.Level}}</p>
 			<p>Host: {{index .Tags "host"}}</p>
 			<p>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</p>
-			<p>Duración: {{.Duration}}</p>	
+			<p>Duración: {{.Duration}}</p>
+			<br>
 			{{if eq .Level "OK"}}
 			<p><b>El servidor volvió a enviar datos.</b></p>
 			{{else}}
