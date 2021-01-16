@@ -29,21 +29,18 @@ stream
 		.id('{{.TaskName}} {{index .Tags "host"}}')
 		.message('{{.Level}} [{{index .Tags "host"}}] El uso de '+metricName+' es muy alto.')
 		.details('
-			<ul>
-			<li>Alerta: {{.ID}}</li>
-			<li>Nivel: {{.Level}}</li>
-			<li>Host: {{index .Tags "host"}}</li>
-			<li>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</li>
-			<li>Duración: {{.Duration}}</li>
-			</ul>
-			<br>	
+			<p>Alerta: {{.ID}}</p>
+			<p>Nivel: {{.Level}}</p>
+			<p>Host: {{index .Tags "host"}}</p>
+			<p>Fecha: {{.Time.Local.Format "Mon, Jan 2 2006 15:04:05 GMT-6"}}</p>
+			<p>Duración: {{.Duration}}</p>
 			{{if eq .Level "OK"}}
 			<p><b>El uso de '+metricName+' regresó a un nivel normal.</b></p>
 			{{else}}
 			<p><b>El uso de '+metricName+' es muy alto.</b></p>
 			{{end}}
 			<p><b>Uso de '+metricName+': {{index .Fields "mean_usage" | printf "%0.2f"}} %</b></p>
-			<p><a href=\"'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">Host Dashboard</a></p>'
+			<p><a href="'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">Host Dashboard</a></p>'
 		)
 		.email()
 		.stateChangesOnly()

@@ -39,10 +39,8 @@ stream
 			<p><b>El proceso de '+serviceName+' dejó de enviar datos.</b></p>
 			<p><b>Revisar en si dejó de funcionar el proceso de '+serviceName+' o el proceso de Telegraf.</b></p>
 			{{end}}
-			<ul>
-			<li><a href=\"'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">Host Dashboard</a></li>
-			<li><a href=\"'+grafanaUrl+'/d/'+serviceDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">'+serviceName+' Dashboard</a></li>
-			</ul>'
+			<p><a href="'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">Host Dashboard</a></p>
+			<p><a href="'+grafanaUrl+'/d/'+serviceDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">'+serviceName+' Dashboard</a></p>'
 		)
 		.email()
 		.stateChangesOnly()
