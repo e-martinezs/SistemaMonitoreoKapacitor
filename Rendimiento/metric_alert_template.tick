@@ -43,7 +43,7 @@ stream
 			<p><b>El uso de '+metricName+' es muy alto.</b></p>
 			{{end}}
 			<p><b>Uso de '+metricName+': {{index .Fields "mean_usage" | printf "%0.2f"}} %</b></p>
-			<p>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></p>'
+			<p><a href=\"'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">Host Dashboard</a></p>'
 		)
 		.email()
 		.stateChangesOnly()

@@ -38,7 +38,7 @@ stream
 			<p><b>El servidor dejó de enviar datos.</b></p>
 			<p><b>Revisar si murió el servidor o el proceso de Telegraf</b><p>
 			{{end}}
-			<p>Host Dashboard: <a>'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}</a></p>'
+			<p><a href=\"'+grafanaUrl+'/d/'+hostDashboardUID+'?var-Host={{index .Tags "host"}}&from={{index .Fields "timestamp_1hour_before"}}&to={{index .Fields "timestamp"}}">Host Dashboard</a></p>'
 		)
 		.inhibit('service_down_alert', 'host')
 		.email()
