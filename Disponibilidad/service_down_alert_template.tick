@@ -1,4 +1,4 @@
-dbrp "influx"."autogen"
+dbrp "telegraf"."autogen"
 
 var measurement string
 var serviceName string
